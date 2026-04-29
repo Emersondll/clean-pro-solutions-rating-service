@@ -1,43 +1,28 @@
-﻿# clean-pro-solutions-rating-service
+# Clean Pro Solutions - Rating Service ⭐
 
-Sistema de avaliaÃ§Ãµes e reviews de prestadores e clientes.
+## 🎯 Papel no Ecossistema
+O **Rating Service** garante a qualidade da plataforma através do feedback dos usuários. Ele gerencia:
+- Avaliações de clientes sobre os serviços prestados.
+- Cálculo de média de estrelas para profissionais.
+- Comentários e métricas de satisfação.
 
-## ðŸš€ Tecnologias
-- **Java 21**
-- **Spring Boot 3.3.4**
-- **Spring Cloud (Eureka, OpenFeign, Config)**
-- **MongoDB** (PersistÃªncia de dados)
-- **RabbitMQ** (Mensageria assÃ­ncrona)
-- **JaCoCo** (RelatÃ³rios de cobertura)
-- **SpringDoc OpenAPI** (DocumentaÃ§Ã£o Swagger)
+## 🚀 Tecnologias
+- **Java 21** & **Spring Boot 3.3.4**
+- **MongoDB** (Persistência de avaliações)
+- **RabbitMQ** (Eventos de finalização de serviço para disparar pedidos de avaliação)
+- **Netflix Eureka** (Service Discovery)
 
-## ðŸ“Š Qualidade e Testes
-Este projeto possui uma regra de integridade de cÃ³digo rigorosa:
-- **Cobertura MÃ­nima**: 80% de instruÃ§Ãµes cobertas (MandatÃ³rio).
-- **Enforcement**: O build falha automaticamente via plugin JaCoCo na fase de erify caso a cobertura seja inferior ao limite.
+## 🛠️ Como Executar
 
-## ðŸ› ï¸ Como rodar
+### 1. Execução Isolada (Individual)
+Para rodar este serviço e suas dependências:
+```bash
+docker-compose up -d --build
+```
+O serviço estará disponível em `http://localhost:8088`.
 
-### PrÃ©-requisitos
-- Docker e Docker Compose instalados.
-- JDK 21 instalado localmente (opcional se usar Docker).
-
-### Via Maven (Local)
-`ash
-mvn clean verify
-`
-
-### Via Docker
-`ash
-docker build -t clean-pro-solutions-rating-service .
-`
-
-## ðŸ—ï¸ Arquitetura
-O serviÃ§o segue os princÃ­pios de **Clean Architecture** e **Domain-Driven Design (DDD)**, com as seguintes camadas:
-- **Controller**: Porta de entrada para requisiÃ§Ãµes REST.
-- **Service**: Regras de negÃ³cio e orquestraÃ§Ã£o.
-- **Repository**: PersistÃªncia desacoplada via Spring Data.
-- **Document/Entity**: Modelagem do domÃ­nio.
+### 2. Execução Integrada
+Este serviço é orquestrado pelo projeto principal [Clean Pro Platform](../README.md).
 
 ---
-Â© 2026 Clean Pro Solutions - Todos os direitos reservados.
+© 2026 Clean Pro Solutions - Desenvolvido por Emerson Lima.

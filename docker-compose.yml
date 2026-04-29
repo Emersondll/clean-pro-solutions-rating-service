@@ -1,0 +1,49 @@
+services:
+  mongo:
+    image: mongo:7.0
+    container_name: rating-mongo
+    ports:
+      - "27024:27017"
+    networks:
+      - rating-net
+
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    container_name: rating-rabbitmq
+    ports:
+      - "5678:5672"
+      - "15678:15672"
+    networks:
+      - rating-net
+
+  service-registry:
+    build:
+      context: ../clean-pro-solutions-service-registry
+      dockerfile: Dockerfile
+    container_name: rating-registry
+    ports:
+      - "8768:8761"
+    networks:
+      - rating-net
+
+  rating-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rating-service
+    ports:
+      - "8088:8088"
+    environment:
+      MONGO_URI: mongodb://mongo:27017/rating_db
+      RABBITMQ_HOST: rabbitmq
+      EUREKA_SERVER_URL: http://service-registry:8761/eureka
+    depends_on:
+      - mongo
+      - rabbitmq
+      - service-registry
+    networks:
+      - rating-net
+
+networks:
+  rating-net:
+    driver: bridge
