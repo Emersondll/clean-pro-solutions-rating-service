@@ -2,8 +2,10 @@ package br.com.cleanprosolutions.rating.service.impl;
 
 import br.com.cleanprosolutions.rating.document.Rating;
 import br.com.cleanprosolutions.rating.dto.RatingRequest;
+import br.com.cleanprosolutions.rating.dto.RatingResponse;
 import br.com.cleanprosolutions.rating.event.dto.RatingCreatedEvent;
 import br.com.cleanprosolutions.rating.exception.DuplicateRatingException;
+import br.com.cleanprosolutions.rating.mapper.RatingMapper;
 import br.com.cleanprosolutions.rating.repository.RatingRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -11,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -40,6 +43,9 @@ class RatingServiceImplTest {
     @Mock
     private RabbitTemplate rabbitTemplate;
 
+    @Spy
+    private RatingMapper mapper = new RatingMapper();
+
     @InjectMocks
     private RatingServiceImpl service;
 
@@ -62,11 +68,12 @@ class RatingServiceImplTest {
         final Rating savedRating = new Rating("rating-1", "reviewer-1", "reviewed-2", "contract-1", 5, "Great service!");
         when(repository.save(any(Rating.class))).thenReturn(savedRating);
 
-        final Rating result = service.submitRating(request);
+        final RatingResponse result = service.submitRating(request);
 
         assertThat(result).isNotNull();
-        assertThat(result.getId()).isEqualTo("rating-1");
-        assertThat(result.getScore()).isEqualTo(5);
+        assertThat(result.id()).isEqualTo("rating-1");
+        assertThat(result.score()).isEqualTo(5);
+        assertThat(result.reviewerId()).isEqualTo("reviewer-1");
 
         verify(repository).save(any(Rating.class));
         verify(rabbitTemplate).convertAndSend(
@@ -85,6 +92,19 @@ class RatingServiceImplTest {
         assertThatThrownBy(() -> service.submitRating(request))
                 .isInstanceOf(DuplicateRatingException.class)
                 .hasMessageContaining("already reviewed");
+    }
+
+    @Test
+    @DisplayName("shouldFindRatingsByReviewedId")
+    void shouldFindRatingsByReviewedId() {
+        final Rating r = new Rating("r-1", "reviewer-1", "reviewed-2", "contract-1", 4, "Good");
+        when(repository.findByReviewedId("reviewed-2")).thenReturn(List.of(r));
+
+        final List<RatingResponse> results = service.findByReviewedId("reviewed-2");
+
+        assertThat(results).hasSize(1);
+        assertThat(results.get(0).id()).isEqualTo("r-1");
+        assertThat(results.get(0).score()).isEqualTo(4);
     }
 
     @Test

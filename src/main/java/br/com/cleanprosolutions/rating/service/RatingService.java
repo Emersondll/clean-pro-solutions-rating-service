@@ -1,7 +1,7 @@
 package br.com.cleanprosolutions.rating.service;
 
-import br.com.cleanprosolutions.rating.document.Rating;
 import br.com.cleanprosolutions.rating.dto.RatingRequest;
+import br.com.cleanprosolutions.rating.dto.RatingResponse;
 
 import java.util.List;
 
@@ -14,26 +14,26 @@ import java.util.List;
 public interface RatingService {
 
     /**
-     * Submits a new rating and publishes a RatingCreatedEvent.
+     * Submits a new rating and publishes a {@code RatingCreatedEvent}.
      *
      * @param request rating details
-     * @return created rating
+     * @return created rating as DTO
      */
-    Rating submitRating(RatingRequest request);
+    RatingResponse submitRating(RatingRequest request);
 
     /**
      * Lists all ratings received by a specific user/contractor.
      *
      * @param reviewedId ID of the reviewed entity
-     * @return list of ratings
+     * @return list of rating DTOs
      */
-    List<Rating> findByReviewedId(String reviewedId);
+    List<RatingResponse> findByReviewedId(String reviewedId);
 
     /**
      * Calculates the average score for a specific user/contractor.
      *
      * @param reviewedId ID of the reviewed entity
-     * @return the average score, or 0.0 if no ratings exist
+     * @return average score, or 0.0 if no ratings exist
      */
     Double calculateAverageScore(String reviewedId);
 }

@@ -2,8 +2,10 @@ package br.com.cleanprosolutions.rating.service.impl;
 
 import br.com.cleanprosolutions.rating.document.Rating;
 import br.com.cleanprosolutions.rating.dto.RatingRequest;
+import br.com.cleanprosolutions.rating.dto.RatingResponse;
 import br.com.cleanprosolutions.rating.event.dto.RatingCreatedEvent;
 import br.com.cleanprosolutions.rating.exception.DuplicateRatingException;
+import br.com.cleanprosolutions.rating.mapper.RatingMapper;
 import br.com.cleanprosolutions.rating.repository.RatingRepository;
 import br.com.cleanprosolutions.rating.service.RatingService;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,8 @@ import java.util.UUID;
 /**
  * Implementation of {@link RatingService}.
  *
+ * <p>Mapping responsibilities are delegated to {@link RatingMapper}.</p>
+ *
  * @author Clean Pro Solutions Team
  * @since 1.0.0
  */
@@ -29,6 +33,7 @@ public class RatingServiceImpl implements RatingService {
 
     private final RatingRepository repository;
     private final RabbitTemplate rabbitTemplate;
+    private final RatingMapper mapper;
 
     @Value("${rabbitmq.exchange.rating:rating.exchange}")
     private String ratingExchange;
@@ -37,8 +42,8 @@ public class RatingServiceImpl implements RatingService {
     private String ratingCreatedRoutingKey;
 
     @Override
-    public Rating submitRating(final RatingRequest request) {
-        log.info("Submitting new rating. Reviewer: {}, Reviewed: {}, Contract: {}",
+    public RatingResponse submitRating(final RatingRequest request) {
+        log.info("Submitting rating — reviewer: {}, reviewed: {}, contract: {}",
                 request.reviewerId(), request.reviewedId(), request.contractId());
 
         if (repository.findByContractIdAndReviewerId(request.contractId(), request.reviewerId()).isPresent()) {
@@ -56,33 +61,30 @@ public class RatingServiceImpl implements RatingService {
         rating.setCreatedAt(Instant.now());
 
         final Rating saved = repository.save(rating);
-        log.info("Rating saved with ID: {}", saved.getId());
+        log.info("Rating saved — id: {}", saved.getId());
 
         publishRatingCreatedEvent(saved);
-
-        return saved;
+        return mapper.toResponse(saved);
     }
 
     @Override
-    public List<Rating> findByReviewedId(final String reviewedId) {
-        log.info("Fetching ratings for user/contractor: {}", reviewedId);
-        return repository.findByReviewedId(reviewedId);
+    public List<RatingResponse> findByReviewedId(final String reviewedId) {
+        log.info("Fetching ratings for reviewedId: {}", reviewedId);
+        return repository.findByReviewedId(reviewedId).stream().map(mapper::toResponse).toList();
     }
 
     @Override
     public Double calculateAverageScore(final String reviewedId) {
-        log.info("Calculating average score for user/contractor: {}", reviewedId);
+        log.info("Calculating average score for reviewedId: {}", reviewedId);
         final List<Rating> ratings = repository.findByReviewedId(reviewedId);
-
-        if (ratings.isEmpty()) {
-            return 0.0;
-        }
-
-        return ratings.stream()
-                .mapToInt(Rating::getScore)
-                .average()
-                .orElse(0.0);
+        return ratings.isEmpty()
+                ? 0.0
+                : ratings.stream().mapToInt(Rating::getScore).average().orElse(0.0);
     }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Private helpers
+    // ─────────────────────────────────────────────────────────────────────────
 
     private void publishRatingCreatedEvent(final Rating rating) {
         final RatingCreatedEvent event = new RatingCreatedEvent(
@@ -92,8 +94,7 @@ public class RatingServiceImpl implements RatingService {
                 rating.getScore(),
                 Instant.now()
         );
-
-        log.info("Publishing RatingCreatedEvent for ratingId: {}", rating.getId());
+        log.info("Publishing RatingCreatedEvent — ratingId: {}", rating.getId());
         rabbitTemplate.convertAndSend(ratingExchange, ratingCreatedRoutingKey, event);
     }
 }
