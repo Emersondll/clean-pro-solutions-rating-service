@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 /**
  * Maps between {@link Rating} and {@link RatingResponse}.
  *
- * @author Clean Pro Solutions Team
+ * @author Emerson Lima
  * @since 1.0.0
  */
 @Component

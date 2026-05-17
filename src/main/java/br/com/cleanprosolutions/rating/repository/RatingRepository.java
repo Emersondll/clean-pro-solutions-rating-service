@@ -10,7 +10,7 @@ import java.util.Optional;
 /**
  * Repository for {@link Rating}.
  *
- * @author Clean Pro Solutions Team
+ * @author Emerson Lima
  * @since 1.0.0
  */
 @Repository

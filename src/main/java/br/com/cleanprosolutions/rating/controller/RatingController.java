@@ -24,7 +24,7 @@ import java.util.List;
 /**
  * REST controller for rating operations.
  *
- * @author Clean Pro Solutions Team
+ * @author Emerson Lima
  * @since 1.0.0
  */
 @Slf4j

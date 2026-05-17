@@ -14,7 +14,7 @@ import jakarta.validation.constraints.NotNull;
  * @param score      Score from 1 to 5
  * @param comment    Optional textual comment
  *
- * @author Clean Pro Solutions Team
+ * @author Emerson Lima
  * @since 1.0.0
  */
 public record RatingRequest(

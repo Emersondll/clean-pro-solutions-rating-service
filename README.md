@@ -156,3 +156,7 @@ clean-pro-solutions-rating-service/
 ├── src/test/
 └── pom.xml
 ```
+
+---
+
+© 2026 Clean Pro Solutions — Developed by **Emerson Lima**

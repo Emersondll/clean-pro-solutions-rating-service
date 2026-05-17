@@ -8,7 +8,7 @@ import java.time.Instant;
 /**
  * MongoDB document representing a rating given by a user or contractor.
  *
- * @author Clean Pro Solutions Team
+ * @author Emerson Lima
  * @since 1.0.0
  */
 @Document(collection = "ratings")

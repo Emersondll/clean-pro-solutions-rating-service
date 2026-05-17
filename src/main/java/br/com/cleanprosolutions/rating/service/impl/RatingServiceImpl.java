@@ -23,7 +23,7 @@ import java.util.UUID;
  *
  * <p>Mapping responsibilities are delegated to {@link RatingMapper}.</p>
  *
- * @author Clean Pro Solutions Team
+ * @author Emerson Lima
  * @since 1.0.0
  */
 @Slf4j

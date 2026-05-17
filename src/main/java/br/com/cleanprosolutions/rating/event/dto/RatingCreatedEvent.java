@@ -14,7 +14,7 @@ import java.time.Instant;
  * @param score      The rating score given
  * @param timestamp  Event creation timestamp
  *
- * @author Clean Pro Solutions Team
+ * @author Emerson Lima
  * @since 1.0.0
  */
 public record RatingCreatedEvent(

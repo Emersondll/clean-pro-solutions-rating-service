@@ -13,7 +13,7 @@ import java.time.Instant;
  * @param comment    optional comment
  * @param createdAt  creation timestamp
  *
- * @author Clean Pro Solutions Team
+ * @author Emerson Lima
  * @since 1.0.0
  */
 public record RatingResponse(
